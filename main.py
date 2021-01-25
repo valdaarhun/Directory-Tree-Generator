@@ -36,7 +36,9 @@ def constructAdjList(adjList, levels, indexedDict):
                 adjList[parent].append(indexedDict[path])
 
 
-def dfs(reverseIndexedDict, adjList, parent, node, tabs):
+def dfs(reverseIndexedDict, adjList, parent, node, tabs, currentDepth, depth = -1):
+    if depth != -1 and currentDepth > depth:
+        return
     path = reverseIndexedDict[node].replace(reverseIndexedDict[parent], '')
     path = '.' if path is '' else path.replace('/', '')
     if node is not 0:
@@ -51,12 +53,17 @@ def dfs(reverseIndexedDict, adjList, parent, node, tabs):
     else:
         print(f'\033[1;31;40m{path}\033[0m')
     if node >= 0:
-
         for child in adjList[node]:
-            dfs(reverseIndexedDict, adjList, node, child, tabs)
+            dfs(reverseIndexedDict, adjList, node, child, tabs, currentDepth + 1, depth)
 
 
 def main():
+    depth = input('Input depth of tree[-1 => full depth]: ')
+    if depth is '':
+        depth = -1
+    else:
+        depth = int(depth)
+    # print(depth)
     rootPath = os.getcwd()
     levels = []
     for path, dirList, fileList in os.walk(rootPath):
@@ -67,7 +74,8 @@ def main():
     reverseIndexedDict = {indexedDict[key]: key for key in indexedDict}
     rootTree = 0
     tabs = ''
-    dfs(reverseIndexedDict, adjList, rootTree, rootTree, tabs)
+    currentDepth = 0
+    dfs(reverseIndexedDict, adjList, rootTree, rootTree, tabs, currentDepth, depth)
 
 
 if __name__ == '__main__':
